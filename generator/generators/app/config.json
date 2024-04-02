@@ -1,0 +1,5 @@
+{
+  "name": "micro",
+  "port": 3905,
+  "modules": ["connection","env","error","interceptors","logger","server","stream"]
+}

@@ -1,0 +1,23 @@
+resources:
+ repositories:
+   - repository: pipelines
+     type: git
+     name: My_demo/pipelines
+     ref: main
+     trigger:
+      - main
+
+trigger:
+  branches:
+    include:
+      - main
+
+
+stages:
+- template: workflow.yml@pipelines
+  parameters:
+    pathBuild: generator
+    pathDeploy: generator
+    archetype: 'ALNITAK'
+    version: 18
+    environment: dev 

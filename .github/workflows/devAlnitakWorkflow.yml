@@ -1,0 +1,54 @@
+name: Angular CI
+
+on:
+  push:
+    branches: [ AR03_A_ALNITAK/feature/* , develop ]
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depht: 0
+
+      - name: Setup
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      
+      - name: Actualizar npm
+        run: npm install -g npm@latest
+      
+      - name: Install Yeoman
+        run: | 
+          npm install -g yo generator-code yeoman-generator
+          npm install
+          npm link
+        working-directory: generator
+
+      - name: Generate code
+        run: yo nodejs
+        working-directory: generator
+      
+      - name: compile generated code
+        run: |
+          npm install
+          npm test
+          npm run coverage
+        working-directory: generator/micro-service
+
+      - name: run Sonar
+        run: |
+          /opt/sonar-scanner/bin/sonar-scanner \
+          -Dsonar.projectKey=23_Orion_Alnitak \
+          -Dsonar.host.url=https://devtools.axity.com/sonarlts \
+          -Dsonar.login=cc16c7519d179e212a345dae320d116f03b578a3 \
+          -Dsonar.sourceEncoding=UTF-8 \
+          -Dsonar.sources=src \
+          -Dsonar.exclusions=**/node_modules/**,**/*.spec.ts,**/*.module.ts,**/app.child.imports.ts,**/src/api/microRouter.ts,**/src/api/index.ts,**/src/config/**/*,**/src/to/**/*,**/src/facade/micro/index.ts \
+          -Dsonar.tests=src \
+          -Dsonar.test.inclusions=**/*.spec.ts \
+          -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
+        working-directory: generator/micro-service 
